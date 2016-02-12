@@ -1,14 +1,43 @@
 import re
+import itertools
 
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
 
-def expand_to_symbols(string, selection_start, selection_end):
-  opening_symbols = "([{";
-  closing_symbols = ")]}";
-  symbols_regex = re.compile("[" + re.escape(opening_symbols + closing_symbols)+"]")
+
+def expand_to_symbols(string, selection_start, selection_end, symbols=None):
+  if not symbols:
+    opening_symbols = "([{"
+    closing_symbols = ")]}"
+
+    counterparts = {
+      "(":")",
+      "{":"}",
+      "[":"]",
+      ")":"(",
+      "}":"{",
+      "]":"["
+    }
+  else:
+    print("symbols:", symbols)
+    opening_symbols = "".join(s[1]
+                  for s in enumerate(symbols) if not s[0] % 2)
+    closing_symbols = "".join(s[1] for s in enumerate(symbols) if s[0] % 2)
+    counterparts = dict(itertools.chain(
+              zip(opening_symbols, closing_symbols),
+              zip(closing_symbols, opening_symbols)))
+
+  original_start = selection_start
+  if (selection_start < selection_end and
+      string[selection_end-1:selection_end] in opening_symbols):
+    selection_start = selection_end
+
+  symbols_regex = re.compile(
+    "[" + re.escape(opening_symbols + closing_symbols) + "]")
 
   quotes_regex = re.compile("(['\"])(?:\\1|.*?\\1)")
   quotes_blacklist = {}
@@ -27,15 +56,6 @@ def expand_to_symbols(string, selection_start, selection_end):
       i += 1
       if (quotes_start + i == quotes_end):
         break;
-
-  counterparts = {
-    "(":")",
-    "{":"}",
-    "[":"]",
-    ")":"(",
-    "}":"{",
-    "]":"["
-  }
 
   # find symbols in selection that are "not closed"
   selection_string = string[selection_start:selection_end]
@@ -130,7 +150,10 @@ def expand_to_symbols(string, selection_start, selection_end):
 
     search_index += 1
 
-  if(selection_start == symbols_start and selection_end == symbols_end):
-    return utils.create_return_obj(symbols_start - 1, symbols_end + 1, string, "symbol")
+  if(original_start <= symbols_start and selection_end == symbols_end):
+    start = min(symbols_start - 1, original_start)
+    return utils.create_return_obj(start, symbols_end + 1, string, "symbol")
   else:
     return utils.create_return_obj(symbols_start, symbols_end, string, "symbol")
+
+interpreter.register_command("symbol", expand_to_symbols)

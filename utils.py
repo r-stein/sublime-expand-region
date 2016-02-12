@@ -1,5 +1,16 @@
 import re
 
+_INDENT_RE = re.compile(r"^(?P<spaces>\s*)")
+
+
+def get_indent(string, line):
+  line_str = string[line["start"]:line["end"]]
+  m = _INDENT_RE.match(line_str)
+  if m is None:  # should never happen
+    return 0
+  return len(m.group("spaces"))
+
+
 def selection_contain_linebreaks(string, startIndex, endIndex):
   linebreakRe = re.compile("(\n)")
   part = string[startIndex:endIndex]
@@ -10,8 +21,10 @@ def selection_contain_linebreaks(string, startIndex, endIndex):
   else:
     return False
 
+
 def create_return_obj(start, end, string, type):
   return {"start": start, "end": end, "string": string[start:end], "type": type}
+
 
 def get_line(string, startIndex, endIndex):
   linebreakRe = re.compile(r'\n')
@@ -41,6 +54,7 @@ def get_line(string, startIndex, endIndex):
       searchIndex += 1
 
   return {"start": newStartIndex, "end": newEndIndex}
+
 
 def trim(string):
   # TODO can s.strip() be used for that?

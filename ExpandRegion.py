@@ -1,4 +1,5 @@
-import sublime, sublime_plugin, os
+import sublime
+import sublime_plugin
 
 try:
   import expand_region_handler
@@ -10,6 +11,7 @@ def _detect_language(view, settings_name):
   point = view.sel()[0].b
   settings = sublime.load_settings(settings_name + ".sublime-settings")
   selectors = settings.get("scope_selectors")
+
   def maximal_score(scopes):
     if not scopes:  # validity check
       return 0
@@ -40,7 +42,8 @@ class ExpandRegionCommand(sublime_plugin.TextCommand):
 
     if not language:
       language = (_detect_language(view, "ExpandRegion") or
-                  _detect_language(view, "ExpandRegionFallback"))
+                  _detect_language(view, "ExpandRegionFallback") or
+                  "javascript")
     if debug:
       print("Determined language: '{0}'".format(language))
 
@@ -54,6 +57,7 @@ class ExpandRegionCommand(sublime_plugin.TextCommand):
         view.sel().add(sublime.Region(result["start"], result["end"]))
         if debug:
           print("startIndex: {0}, endIndex: {1}, type: {2}".format(result["start"], result["end"], result["type"]))
+
 
 class ExpandRegionContext(sublime_plugin.EventListener):
     def on_query_context(self, view, key, *args):

@@ -2,8 +2,10 @@ import re
 
 try:
     import expand_to_regex_set
+    from _minterp import interpreter
 except:
     from . import expand_to_regex_set
+    from ._minterp import interpreter
 
 
 def expand_to_subword(string, start, end):
@@ -14,7 +16,7 @@ def expand_to_subword(string, start, end):
     else:
         regex = re.compile(r"[a-z]")
 
-    result = expand_to_regex_set._expand_to_regex_rule(
+    result = expand_to_regex_set.expand_to_regex_rule(
         string, start, end, regex, "subword")
     if result is None:
         return None
@@ -49,3 +51,5 @@ def _is_inside_upper(string, start, end):
     sub_str = sub_str[1:3]
     contains_lower = re.search(r"[a-z]", sub_str)
     return bool(contains_upper) and not bool(contains_lower)
+
+interpreter.register_command("subword", expand_to_subword)

@@ -2,8 +2,11 @@ import re
 
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
+
 
 def expand_to_xml_node(string, start, end):
   tag_properties = get_tag_properties(string[start:end])
@@ -52,6 +55,7 @@ def expand_to_xml_node(string, start, end):
 
       return utils.create_return_obj(newStart, newEnd, string, "parent_node_content")
 
+
 def is_within_tag(string, startIndex, endIndex):
   openingRe = re.compile("<");
   closingRe = re.compile(">");
@@ -88,6 +92,8 @@ def is_within_tag(string, startIndex, endIndex):
     searchIndex += 1
 
 # returns tag name and if tag has a closing slash
+
+
 def get_tag_properties(string):
   regex = re.compile(
     r"<\s*"
@@ -115,6 +121,7 @@ def get_tag_properties(string):
     tag_type = "opening"
 
   return {"name": tag_name, "type": tag_type}
+
 
 def find_tag(string, direction, tag_name=""):
   # search for opening and closing tag with a tag_name. If tag_name = "", search
@@ -150,3 +157,6 @@ def find_tag(string, direction, tag_name=""):
       symbolStack.pop()
     elif(tag_type == target_tag_type_counterpart):
       symbolStack.append(tag_type)
+
+
+interpreter.register_command("xml_node", expand_to_xml_node)

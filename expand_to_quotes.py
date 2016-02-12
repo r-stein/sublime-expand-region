@@ -2,8 +2,11 @@ import re
 
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
+
 
 def expand_to_quotes(string, selection_start, selection_end):
   quotes_regex = re.compile("(['\"])(?:\\\.|.)*?\\1")
@@ -17,7 +20,8 @@ def expand_to_quotes(string, selection_start, selection_end):
     if quotes_end < selection_start:
       continue
 
-    # quotes pair start is after selection, return, no need to continue loop
+    # quotes pair start is after selection, return, no need to continue
+    # loop
     if quotes_start > selection_end:
       return None
 
@@ -36,3 +40,5 @@ def expand_to_quotes(string, selection_start, selection_end):
     # selection is within the found quote pairs, return "quotes content"
     if(selection_start > quotes_start and selection_end < quotes_end):
       return utils.create_return_obj(quotes_content_start, quotes_content_end, string, "quotes")
+
+interpreter.register_command("quotes", expand_to_quotes)

@@ -1,13 +1,15 @@
 import re
 try:
-    import expand_to_word
-    import expand_to_symbols
     import utils
+    import expand_to_symbols
+    import expand_to_word
+    from _minterp import interpreter
     _ST3 = False
 except:
-    from . import expand_to_word
-    from . import expand_to_symbols
     from . import utils
+    from . import expand_to_symbols
+    from . import expand_to_word
+    from ._minterp import interpreter
     _ST3 = True
 
 
@@ -200,67 +202,14 @@ def expand_against_surrounding_command(string, start, end):
                                            "latex_command_surround")
 
 
-# TODO could be moved to utils?
-def _closest_result(result1, result2):
-    if result1 is None:
-        return result2
-    if result2 is None:
-        return result1
-    if result1["start"] < result2["start"] and\
-            result2["end"] < result1["end"]:
-        return result2
-    else:
-        return result1
-
-
-def expand(string, start, end):
-    expand_stack = []
-
-    expand_stack.append("word")
-
-    result = expand_to_word.expand_to_word(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack.append("latex_command_base")
-
-    result = expand_agains_base_command(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack = ["latex_command_arg"]
-
-    result = expand_against_command_args(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack.append("latex_command_surround")
-
-    result = expand_against_surrounding_command(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack.append("latex_environment_matching")
-
-    result = expand_against_matching_env(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    env_result = expand_against_env(string, start, end)
-
-    # there might be a {} inside the environment
-    sym_result = expand_to_symbols.expand_to_symbols(string, start, end)
-    result = _closest_result(env_result, sym_result)
-    if result == env_result:
-        expand_stack.append("latex_environment")
-    else:
-        expand_stack.append("symbols")
-
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
+interpreter.create_macro("latex", [
+    "word",
+    expand_agains_base_command,
+    expand_against_command_args,
+    expand_against_surrounding_command,
+    expand_against_matching_env,
+    [
+        expand_against_env,
+        "symbol"
+    ]
+])

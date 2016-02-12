@@ -1,48 +1,29 @@
-import re
-
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
 
-def expand_to_line(string, startIndex, endIndex):
-  linebreakRe = re.compile(r'\n')
 
-  spacesAndTabsRe = re.compile(r'([ \t]+)')
+def expand_to_line(string, start, end):
+  line = utils.get_line(string, start, end)
+  indent = utils.get_indent(string, line)
+  lstart = line["start"] + indent
+  if start < lstart:
+    lstart = line["start"]
+  lend = max(end, line["end"])
+  if lstart == start and lend == end:
+    return
+  return utils.create_return_obj(lstart, lend, string, "line")
 
-  searchIndex = startIndex - 1;
-  while True:
-    if searchIndex < 0:
-      newStartIndex = searchIndex + 1
-      break
-    char = string[searchIndex:searchIndex+1]
-    if linebreakRe.match(char):
-      newStartIndex = searchIndex + 1
-      break
-    else:
-      searchIndex -= 1
 
-  searchIndex = endIndex;
-  while True:
-    if searchIndex > len(string) - 1:
-      newEndIndex = searchIndex
-      break
-    char = string[searchIndex:searchIndex+1]
-    if linebreakRe.match(char):
-      newEndIndex = searchIndex
-      break
-    else:
-      searchIndex += 1
+def expand_to_full_line(string, start, end):
+  line = utils.get_line(string, start, end)
+  lstart = line["start"]
+  lend = line["end"]
+  return utils.create_return_obj(lstart, lend, string, "full_line")
 
-  s = string[newStartIndex:newEndIndex]
-  r = spacesAndTabsRe.match(s)
-  if r and r.end() <= startIndex:
-    newStartIndex = newStartIndex + r.end();
 
-  try:
-    if startIndex == newStartIndex and endIndex == newEndIndex:
-      return None
-    else:
-      return utils.create_return_obj(newStartIndex, newEndIndex, string, "line")
-  except NameError:
-    return None
+interpreter.register_command("line", expand_to_line)
+interpreter.register_command("full_line", expand_to_full_line)

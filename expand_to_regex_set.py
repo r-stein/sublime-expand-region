@@ -1,9 +1,16 @@
+import re
+
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
 
-def _expand_to_regex_rule(string, startIndex, endIndex, regex, type):
+
+def expand_to_regex_rule(string, startIndex, endIndex, regex=r"\w",
+                         expand_type="regex"):
+  regex = re.compile(regex)
   # if there is a selection (and not only a blinking cursor)
   if(startIndex != endIndex):
     selection = string[startIndex:endIndex]
@@ -46,8 +53,10 @@ def _expand_to_regex_rule(string, startIndex, endIndex, regex, type):
     if startIndex == newStartIndex and endIndex == newEndIndex:
       return None
     else:
-      return utils.create_return_obj(newStartIndex, newEndIndex, string, type)
+      return utils.create_return_obj(newStartIndex, newEndIndex, string, expand_type)
   except NameError:
     # newStartIndex or newEndIndex might not have been defined above, because
     # the character was not found.
     return None
+
+interpreter.register_command("regex", expand_to_regex_rule)

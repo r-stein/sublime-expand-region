@@ -1,26 +1,14 @@
-import re, hashlib, json
+import hashlib
+import json
 
 try:
-  import javascript
-  import html
-  import latex
-  import python
+  from _minterp import interpreter
 except:
-  from . import javascript
-  from . import html
-  from . import latex
-  from . import python
+  from ._minterp import interpreter
 
-def expand(string, start, end, language="", settings=None):
 
-  if language == "html":
-    result = html.expand(string, start, end)
-  elif language == "latex":
-    result = latex.expand(string, start, end)
-  elif language == "python":
-    result = python.expand(string, start, end)
-  else:
-    result = javascript.expand(string, start, end)
+def expand(string, start, end, language, settings=None):
+  result = interpreter.interp(language, string, start, end)
 
   if (result != None and settings):
     expand_region_settings = settings.get("expand_region_settings")
@@ -30,8 +18,8 @@ def expand(string, start, end, language="", settings=None):
 
   return result;
 
-def undo(string, start, end, settings=None):
 
+def undo(string, start, end, settings=None):
   if (settings):
     expand_region_settings = settings.get("expand_region_settings")
     result = get_last_selection(expand_region_settings, string.encode('utf-8'), start, end)
@@ -62,6 +50,7 @@ def add_to_stack(settingsJson, string, startIndex, endIndex, oldStartIndex, oldE
   newSettingsJson = json.dumps(settings)
   return newSettingsJson
 
+
 def get_last_selection(settingsJson, string, startIndex, endIndex):
   settings = json.loads(settingsJson)
   newSelection = None
@@ -85,7 +74,3 @@ def get_last_selection(settingsJson, string, startIndex, endIndex):
       newSelection = {"startIndex": lastStackItem.get("start"), "endIndex": lastStackItem.get("end")}
   newSettingsJson = json.dumps(settings)
   return {"newSettingsJson": newSettingsJson, "newSelection": newSelection}
-
-
-
-

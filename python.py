@@ -1,41 +1,11 @@
 try:
     import expand_to_indent
-    import javascript
     import utils
+    from _minterp import interpreter
 except:
     from . import expand_to_indent
-    from . import javascript
     from . import utils
-
-
-def expand(string, start, end):
-    expand_stack = []
-    result = javascript.expand(string, start, end)
-    if result:
-        return result
-
-    expand_stack.append("line_no_indent")
-    result = expand_line_without_indent(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack.append("line_continuation")
-    result = expand_over_line_continuation(string, start, end)
-    if result:
-        return result
-
-    expand_stack.append("py_block_start")
-    result = expand_python_block_from_start(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
-
-    expand_stack.append("py_indent")
-    result = expand_to_indent.py_expand_to_indent(string, start, end)
-    if result:
-        result["expand_stack"] = expand_stack
-        return result
+    from ._minterp import interpreter
 
 
 def expand_over_line_continuation(string, start, end):
@@ -66,10 +36,23 @@ def expand_python_block_from_start(string, start, end):
         return utils.create_return_obj(start, end, string, "py_block_start")
 
 
-def expand_line_without_indent(string, start, end):
-    line = utils.get_line(string, start, end)
-    indent = expand_to_indent.get_indent(string, line)
-    lstart = min(start, line["start"] + indent)
-    lend = max(end, line["end"])
-    if lstart != start or lend != end:
-        return utils.create_return_obj(lstart, lend, string, "line_no_indent")
+interpreter.create_macro("python", [
+    "subword",
+    "word",
+    {
+        "scope": "quotes",
+        "command": "symbol"
+    },
+    [
+        "symbol",
+        "quotes",
+        "semantic_unit",
+        "line"
+    ],
+    [
+        expand_over_line_continuation,
+        expand_python_block_from_start
+    ],
+    # "indent",
+    "py_indent"
+])

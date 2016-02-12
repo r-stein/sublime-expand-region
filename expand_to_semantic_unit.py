@@ -2,8 +2,11 @@ import re
 
 try:
   import utils
+  from _minterp import interpreter
 except:
   from . import utils
+  from ._minterp import interpreter
+
 
 # This function definitely sucks and needs a serious rework. Finding semantic
 # units is not that easy. Maybe a parser is needed?
@@ -87,3 +90,5 @@ def expand_to_semantic_unit(string, startIndex, endIndex):
     return utils.create_return_obj(newStartIndex, newEndIndex, string, "semantic_unit")
   except NameError:
     return None
+
+interpreter.register_command("semantic_unit", expand_to_semantic_unit)
