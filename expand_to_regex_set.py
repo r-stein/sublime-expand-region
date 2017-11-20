@@ -1,6 +1,9 @@
 import re
 
 try:
+  # Block it from trying to import something which should not be on the python sys.path
+  # https://github.com/hktonylee/SublimeNumberKing/issues/4
+  import expand_region_handler
   import utils
   from _minterp import interpreter
 except:
@@ -27,7 +30,7 @@ def expand_to_regex_rule(string, startIndex, endIndex, regex=r"\w",
       newStartIndex = searchIndex + 1
       break
     char = string[searchIndex:searchIndex+1]
-    # character found, that does not fit into the search set 
+    # character found, that does not fit into the search set
     if regex.match(char) is None:
       newStartIndex = searchIndex + 1
       break
@@ -42,7 +45,7 @@ def expand_to_regex_rule(string, startIndex, endIndex, regex=r"\w",
       newEndIndex = searchIndex
       break
     char = string[searchIndex:searchIndex+1]
-    # character found, that does not fit into the search set 
+    # character found, that does not fit into the search set
     if regex.match(char) is None:
       newEndIndex = searchIndex
       break

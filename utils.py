@@ -1,5 +1,7 @@
 import re
 
+is_debug_enabled = False
+
 _INDENT_RE = re.compile(r"^(?P<spaces>\s*)")
 
 

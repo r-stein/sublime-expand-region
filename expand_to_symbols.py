@@ -2,6 +2,9 @@ import re
 import itertools
 
 try:
+  # Block it from trying to import something which should not be on the python sys.path
+  # https://github.com/hktonylee/SublimeNumberKing/issues/4
+  import expand_region_handler
   import utils
   from _minterp import interpreter
 except:
