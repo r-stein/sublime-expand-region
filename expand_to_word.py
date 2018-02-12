@@ -2,9 +2,9 @@ import re
 
 try:
   import expand_to_regex_set
-  from _minterp import interpreter
+  import interpreter
 except:
-  from ._minterp import interpreter
+  from . import interpreter
   from . import expand_to_regex_set
 
 

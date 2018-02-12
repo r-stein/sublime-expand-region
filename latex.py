@@ -4,14 +4,14 @@ try:
     import utils
     import expand_to_symbols
     import expand_to_word
-    from _minterp import interpreter
+    import interpreter
     _ST3 = False
 except:
     from . import expand_to_regex_set
     from . import utils
     from . import expand_to_symbols
     from . import expand_to_word
-    from ._minterp import interpreter
+    from . import interpreter
     _ST3 = True
 
 

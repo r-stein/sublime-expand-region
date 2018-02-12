@@ -1,7 +1,7 @@
 try:
-    from _minterp import interpreter
+    import interpreter
 except:
-    from ._minterp import interpreter
+    from . import interpreter
 
 
 interpreter.create_macro("html", [

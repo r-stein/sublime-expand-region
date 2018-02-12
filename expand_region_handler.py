@@ -2,10 +2,10 @@ import hashlib
 import json
 
 try:
-  from _minterp import interpreter
+  import interpreter
   import utils
 except:
-  from ._minterp import interpreter
+  from . import interpreter
   from . import utils
 
 

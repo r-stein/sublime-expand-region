@@ -1,11 +1,11 @@
 try:
     import expand_to_indent
     import utils
-    from _minterp import interpreter
+    import interpreter
 except:
     from . import expand_to_indent
     from . import utils
-    from ._minterp import interpreter
+    from . import interpreter
 
 
 def expand_over_line_continuation(string, start, end):

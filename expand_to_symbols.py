@@ -6,10 +6,10 @@ try:
   # https://github.com/hktonylee/SublimeNumberKing/issues/4
   import expand_region_handler
   import utils
-  from _minterp import interpreter
+  import interpreter
 except:
   from . import utils
-  from ._minterp import interpreter
+  from . import interpreter
 
 
 def expand_to_symbols(string, selection_start, selection_end, symbols=None):

@@ -1,8 +1,10 @@
 # the registered and used command
 # core structure of the interpreter
-_commands = {}
+if '_commands' not in globals():
+    _commands = {}
 
-_macros = {}
+if '_macros' not in globals():
+    _macros = {}
 
 
 def register_command(name, function):

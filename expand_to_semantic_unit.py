@@ -5,10 +5,10 @@ try:
   # https://github.com/hktonylee/SublimeNumberKing/issues/4
   import expand_region_handler
   import utils
-  from _minterp import interpreter
+  import interpreter
 except:
   from . import utils
-  from ._minterp import interpreter
+  from . import interpreter
 
 
 # This function definitely sucks and needs a serious rework. Finding semantic

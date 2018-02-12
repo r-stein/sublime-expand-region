@@ -2,10 +2,10 @@ import re
 
 try:
     import expand_to_regex_set
-    from _minterp import interpreter
+    import interpreter
 except:
     from . import expand_to_regex_set
-    from ._minterp import interpreter
+    from . import interpreter
 
 
 def expand_to_subword(string, start, end):
